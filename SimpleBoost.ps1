@@ -1,6 +1,6 @@
 ﻿#Requires -Version 5.1
-# BLK Boost - otimizador pessoal para jogos (Windows 10/11 64 bits)
-# Interface WPF. Cada ajuste guarda o valor original em C:\ProgramData\BlkBoost\backup.json
+# Simple Boost - otimizador pessoal para jogos (Windows 10/11 64 bits)
+# Interface WPF. Cada ajuste guarda o valor original em C:\ProgramData\SimpleBoost\backup.json
 # e pode ser revertido individualmente.
 
 # ---------------- Auto-elevação (admin) ----------------
@@ -17,8 +17,8 @@ Add-Type -Name Win -Namespace Native -MemberDefinition @'
 [DllImport("shell32.dll", CharSet = CharSet.Unicode)] public static extern int SetCurrentProcessExplicitAppUserModelID(string id);
 '@
 [void][Native.Win]::ShowWindow([Native.Win]::GetConsoleWindow(), 0)
-# ID próprio para a barra de tarefas mostrar o ícone do BLK Boost, e não o do PowerShell
-[void][Native.Win]::SetCurrentProcessExplicitAppUserModelID('BLK.BlkBoost')
+# ID próprio para a barra de tarefas mostrar o ícone do Simple Boost, e não o do PowerShell
+[void][Native.Win]::SetCurrentProcessExplicitAppUserModelID('SimpleBoost.App')
 
 # Taxa de atualização atual e máxima do monitor principal (na resolução atual)
 Add-Type -Namespace Native -Name Display -MemberDefinition @'
@@ -68,9 +68,15 @@ public static bool Resume(int pid) {
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
-$BackupDir  = Join-Path $env:ProgramData 'BlkBoost'
+$BackupDir  = Join-Path $env:ProgramData 'SimpleBoost'
 $BackupFile = Join-Path $BackupDir 'backup.json'
 New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null
+# O programa se chamava BLK Boost: traz os backups da pasta antiga para não perder o que dá para reverter
+$OldDir = Join-Path $env:ProgramData 'BlkBoost'
+if ((Test-Path $OldDir) -and -not (Test-Path $BackupFile)) {
+    Get-ChildItem $OldDir | Where-Object Name -ne 'app' | Move-Item -Destination $BackupDir -Force
+    Remove-Item $OldDir -Recurse -Force -ErrorAction SilentlyContinue
+}
 $GuidRx = '[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}'
 
 # ---------------- Backup ----------------
@@ -611,7 +617,7 @@ function Repair-PerfCounters {
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="BLK Boost" Width="1080" Height="720" MinWidth="880" MinHeight="580"
+        Title="Simple Boost" Width="1080" Height="720" MinWidth="880" MinHeight="580"
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
         Background="#0E0F11" FontFamily="Segoe UI" UseLayoutRounding="True">
   <WindowChrome.WindowChrome>
@@ -907,9 +913,9 @@ function Repair-PerfCounters {
       <Grid Background="{StaticResource Rail}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
           <Border Width="22" Height="22" CornerRadius="3" Background="{StaticResource Accent}">
-            <TextBlock Text="B" FontWeight="Black" FontSize="13" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="S" FontWeight="Black" FontSize="13" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
-          <TextBlock Text="BLK BOOST" Foreground="{StaticResource Text}" FontSize="12" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center"/>
+          <TextBlock Text="SIMPLE BOOST" Foreground="{StaticResource Text}" FontSize="12" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
           <Button x:Name="BtnMin"   Style="{StaticResource BtnChrome}" Content="&#xE921;"/>
@@ -1283,7 +1289,7 @@ function Repair-PerfCounters {
 
 $window = [Windows.Markup.XamlReader]::Load((New-Object System.Xml.XmlNodeReader $xaml))
 # Ícone: ao lado do script quando aberto pelo .exe, em assets\ quando aberto pelo .bat
-foreach ($ico in (Join-Path $PSScriptRoot 'BlkBoost.ico'), (Join-Path $PSScriptRoot 'assets\BlkBoost.ico')) {
+foreach ($ico in (Join-Path $PSScriptRoot 'SimpleBoost.ico'), (Join-Path $PSScriptRoot 'assets\SimpleBoost.ico')) {
     if (Test-Path $ico) { $window.Icon = [Windows.Media.Imaging.BitmapFrame]::Create([Uri]$ico); break }
 }
 $ui = @{}
@@ -1562,7 +1568,7 @@ function Start-Scan {
 # ---------------- Ações ----------------
 function New-RestorePoint {
     Write-Log 'Criando ponto de restauração (pode levar até 1 minuto)...'
-    $job = Start-Job { Checkpoint-Computer -Description 'BLK Boost' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop -WarningAction Stop }
+    $job = Start-Job { Checkpoint-Computer -Description 'Simple Boost' -RestorePointType MODIFY_SETTINGS -ErrorAction Stop -WarningAction Stop }
     while ($job.State -eq 'Running') { Update-Ui; Start-Sleep -Milliseconds 100 }
     try { Receive-Job $job -ErrorAction Stop -WarningAction Stop | Out-Null; Write-Log 'Ponto de restauração criado.' 'ok' }
     catch { Write-Log "Ponto de restauração não criado: $($_.Exception.Message)" 'warn' }
@@ -1588,7 +1594,7 @@ $ui.BtnApply.Add_Click({
         }
         foreach ($t in $toUndo) {
             if (-not (Test-HasBackup $t.Id)) {
-                Write-Log "$($t.Name): já estava ativo antes do BLK Boost, não há valor original para voltar." 'warn'
+                Write-Log "$($t.Name): já estava ativo antes do Simple Boost, não há valor original para voltar." 'warn'
                 continue
             }
             try {
@@ -1976,7 +1982,7 @@ function Start-GameMode {
             if ([Native.Proc]::Suspend($p.Id)) { $paused += $p.Id }
         }
     }
-    # Os PIDs ficam salvos: se o BLK Boost fechar de forma inesperada, eles são retomados ao abrir de novo
+    # Os PIDs ficam salvos: se o Simple Boost fechar de forma inesperada, eles são retomados ao abrir de novo
     $script:GameCfg.Paused = $paused
     Save-GameCfg
     $script:GameOn = $true
@@ -2023,7 +2029,7 @@ function Get-PresentMon {
     Write-Log 'Baixando o PresentMon (Intel, ~1 MB)...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $r = Invoke-RestMethod 'https://api.github.com/repos/GameTechDev/PresentMon/releases/latest' -Headers @{ 'User-Agent' = 'BlkBoost' }
+        $r = Invoke-RestMethod 'https://api.github.com/repos/GameTechDev/PresentMon/releases/latest' -Headers @{ 'User-Agent' = 'SimpleBoost' }
         $a = $r.assets | Where-Object { $_.name -match '^PresentMon-[\d.]+-x64\.exe$' } | Select-Object -First 1
         if (-not $a) { throw 'arquivo do PresentMon não encontrado no release.' }
         $tmp = "$PmExe.download"
@@ -2099,7 +2105,7 @@ function Start-Capture {
     $stamp = Get-Date
     $csv   = Join-Path $CapDir ('{0:yyyyMMdd-HHmmss}.csv' -f $stamp)
     $pmArgs = "--process_name `"$game.exe`" --output_file `"$csv`" --timed $secs --terminate_after_timed " +
-              '--stop_existing_session --no_console_stats --v1_metrics --session_name BlkBoost'
+              '--stop_existing_session --no_console_stats --v1_metrics --session_name SimpleBoost'
 
     $script:Capturing = $true
     $script:CapCancel = $false

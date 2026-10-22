@@ -1,4 +1,4 @@
-# Compila o BlkBoost.exe no GitHub e publica na Release.
+# Compila o SimpleBoost.exe no GitHub e publica na Release.
 #   - Enviar uma tag (ex.: git tag v1.0.0 && git push origin v1.0.0) cria a Release com o .exe anexado.
 #   - "Run workflow" na aba Actions só compila e deixa o .exe para baixar em Artifacts.
 # Assinatura (SignPath Foundation): fica desligada até as variáveis SIGNPATH_* e o segredo
@@ -27,8 +27,8 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: BlkBoost
-          path: dist/BlkBoost.exe
+          name: SimpleBoost
+          path: dist/SimpleBoost.exe
           if-no-files-found: error
 
       - name: Assinar (SignPath)
@@ -49,5 +49,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $exe = if (Test-Path signed/BlkBoost.exe) { 'signed/BlkBoost.exe' } else { 'dist/BlkBoost.exe' }
-          gh release create $env:GITHUB_REF_NAME $exe --title "BLK Boost $env:GITHUB_REF_NAME" --generate-notes
+          $exe = if (Test-Path signed/SimpleBoost.exe) { 'signed/SimpleBoost.exe' } else { 'dist/SimpleBoost.exe' }
+          gh release create $env:GITHUB_REF_NAME $exe --title "Simple Boost $env:GITHUB_REF_NAME" --generate-notes

@@ -1,4 +1,4 @@
-// Executável do BLK Boost: carrega o BlkBoost.ps1 embutido e abre a interface sem janela de console.
+// Executável do Simple Boost: carrega o SimpleBoost.ps1 embutido e abre a interface sem janela de console.
 // O app.manifest faz o Windows pedir administrador ao abrir (o script precisa disso).
 using System;
 using System.Diagnostics;
@@ -8,11 +8,11 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("BLK Boost")]
+[assembly: AssemblyTitle("Simple Boost")]
 [assembly: AssemblyDescription("Otimizador para jogos")]
-[assembly: AssemblyProduct("BLK Boost")]
-[assembly: AssemblyCompany("BLK")]
-[assembly: AssemblyCopyright("BLK")]
+[assembly: AssemblyProduct("Simple Boost")]
+[assembly: AssemblyCompany("Simple Boost")]
+[assembly: AssemblyCopyright("Simple Boost")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
@@ -23,11 +23,11 @@ static class Program
     {
         try
         {
-            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "BlkBoost", "app");
+            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SimpleBoost", "app");
             PrepareDir(dir);
-            string script = Path.Combine(dir, "BlkBoost.ps1");
-            Extract("BlkBoost.ps1", script);
-            Extract("BlkBoost.ico", Path.Combine(dir, "BlkBoost.ico"));
+            string script = Path.Combine(dir, "SimpleBoost.ps1");
+            Extract("SimpleBoost.ps1", script);
+            Extract("SimpleBoost.ico", Path.Combine(dir, "SimpleBoost.ico"));
 
             var psi = new ProcessStartInfo(
                 Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe"),
@@ -39,7 +39,7 @@ static class Program
         }
         catch (Exception e)
         {
-            MessageBox.Show("Não foi possível abrir o BLK Boost:\n\n" + e.Message, "BLK Boost",
+            MessageBox.Show("Não foi possível abrir o Simple Boost:\n\n" + e.Message, "Simple Boost",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }

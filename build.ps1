@@ -1,14 +1,14 @@
-﻿# Gera dist\BlkBoost.exe (ícone + script embutido). Usa o compilador C# que já vem com o Windows.
+﻿# Gera dist\SimpleBoost.exe (ícone + script embutido). Usa o compilador C# que já vem com o Windows.
 #   powershell -ExecutionPolicy Bypass -File build.ps1
 $ErrorActionPreference = 'Stop'
 $root   = $PSScriptRoot
 $assets = Join-Path $root 'assets'
 $dist   = Join-Path $root 'dist'
-$ico    = Join-Path $assets 'BlkBoost.ico'
+$ico    = Join-Path $assets 'SimpleBoost.ico'
 New-Item -ItemType Directory -Path $assets, $dist -Force | Out-Null
 
 # ---------------- Ícone ----------------
-# Quadrado laranja arredondado com um "B" branco, em vários tamanhos (PNG dentro do .ico)
+# Quadrado laranja arredondado com um "S" branco, em vários tamanhos (PNG dentro do .ico)
 function New-IconPng([int]$size) {
     Add-Type -AssemblyName System.Drawing
     $bmp = New-Object Drawing.Bitmap $size, $size
@@ -30,7 +30,7 @@ function New-IconPng([int]$size) {
     $fmt = New-Object Drawing.StringFormat
     $fmt.Alignment = 'Center'; $fmt.LineAlignment = 'Center'
     $rect = New-Object Drawing.RectangleF 0, ([float]($size * 0.03)), $size, $size
-    $g.DrawString('B', $font, [Drawing.Brushes]::White, $rect, $fmt)
+    $g.DrawString('S', $font, [Drawing.Brushes]::White, $rect, $fmt)
     $g.Dispose()
 
     $ms = New-Object IO.MemoryStream
@@ -77,9 +77,9 @@ if (-not (Test-Path $ico)) {
 
 # ---------------- Executável ----------------
 $csc = Join-Path $env:windir 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-$exe = Join-Path $dist 'BlkBoost.exe'
+$exe = Join-Path $dist 'SimpleBoost.exe'
 & $csc /nologo /target:winexe /optimize+ "/out:$exe" "/win32icon:$ico" "/win32manifest:$root\launcher\app.manifest" `
-    "/resource:$root\BlkBoost.ps1,BlkBoost.ps1" "/resource:$ico,BlkBoost.ico" /r:System.Windows.Forms.dll `
+    "/resource:$root\SimpleBoost.ps1,SimpleBoost.ps1" "/resource:$ico,SimpleBoost.ico" /r:System.Windows.Forms.dll `
     "$root\launcher\Launcher.cs"
 if ($LASTEXITCODE -ne 0) { throw "Falha ao compilar (código $LASTEXITCODE)." }
 Write-Host "Pronto: $exe ($([math]::Round((Get-Item $exe).Length / 1KB)) KB)"
