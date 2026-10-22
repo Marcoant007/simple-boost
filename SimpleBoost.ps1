@@ -1677,7 +1677,7 @@ Add-Tool 'Apps na inicialização' 'Desligue o que não precisa abrir junto com 
 Add-Tool 'Taxa de atualização do monitor' 'Confira se o monitor está na maior taxa disponível (144 Hz, 240 Hz...).' 0xE7F8 'Abrir' {
     Start-Process 'ms-settings:display-advanced'; Write-Log 'Configurações avançadas de vídeo abertas.' }
 
-Add-Tool 'Reparar contadores de desempenho' 'Reconstrói os contadores do Windows (lodctr /R). Corrige Gerenciador de Tarefas sem dados de CPU e o clock no Painel.' 0xE90F 'Reparar' {
+Add-Tool 'Reparar contadores de desempenho' 'Reconstrói os contadores do Windows (lodctr /R). Corrige o Gerenciador de Tarefas sem dados de CPU.' 0xE90F 'Reparar' {
     Repair-PerfCounters }
 
 # ---------------- Painel ----------------

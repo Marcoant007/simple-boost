@@ -2,6 +2,8 @@
 
 Otimizador para jogos no Windows 10/11 (64 bits). Junta num lugar só os ajustes que realmente fazem diferença, mostra o que cada um faz e permite desfazer qualquer um com um clique.
 
+![Tela de otimizações do Simple Boost](screenshots/otimizar.png)
+
 ## Download
 
 1. Vá em **[Releases](../../releases/latest)** e baixe o `SimpleBoost.exe`.
@@ -15,18 +17,44 @@ O executável não tem assinatura digital paga, então o SmartScreen pode avisar
 
 Alguns antivírus também podem desconfiar, porque o programa mexe no registro e no plano de energia. O código-fonte inteiro está aqui no repositório (`SimpleBoost.ps1`) para quem quiser conferir. O `.exe` das Releases é compilado pelo próprio GitHub a partir desse código (veja a aba **Actions**), não no PC de ninguém.
 
+## Resultado no CS2
+
+Teste num Ryzen 5 5600X com RTX 3070: **+10% de FPS médio**. O ganho em outro PC depende do hardware e de quais ajustes já estavam ligados.
+
+![Comparação de FPS no CS2 com e sem o Simple Boost](screenshots/benchmark-cs2.png)
+
 ## O que ele faz
 
-| Página | Para que serve |
-|---|---|
-| **Painel** | Mostra seu processador, placa de vídeo, memória e versão do Windows. |
-| **Otimizar** | Lista os ajustes (plano de energia, Game DVR, Modo de Jogo, VBS, HAGS, rede...). Cada um diz se o ganho é **real**, **situacional** ou **placebo**, e se precisa reiniciar. |
-| **Windows** | Desliga anúncios, sugestões e programas em segundo plano do Windows. |
-| **Modo Jogo** | Fecha ou pausa os programas que você escolher enquanto joga. Ao parar, os pausados voltam. |
-| **Benchmark** | Grava o FPS enquanto você joga, para comparar antes e depois dos ajustes. |
-| **Análise** | Procura problemas comuns: monitor abaixo da taxa máxima, RAM em single channel, notebook na bateria, VBS ligado etc. |
-| **Ferramentas** | Atalhos úteis: limpar temporários, escolher GPU por jogo, reparar contadores de desempenho. |
-| **Atividade** | Registro de tudo que o programa fez. |
+### Painel
+Mostra seu processador, placa de vídeo, memória e versão do Windows.
+
+![Painel](screenshots/painel.png)
+
+### Otimizar
+Os ajustes que mexem no desempenho: plano de energia, Game DVR, Modo de Jogo, VBS, HAGS, rede e outros. Cada um diz se o ganho é **comprovado**, **situacional** ou **placebo**, e se precisa reiniciar. O botão **Ligar recomendados** marca só os que valem a pena.
+
+### Windows
+Deixa o Windows mais limpo: desliga Copilot, Recall, anúncios, sugestões e rastreamento. Não aumenta FPS, mas tira coisa rodando à toa.
+
+![Página Windows](screenshots/windows.png)
+
+### Modo Jogo
+Você marca o que **fechar** (F) ou **pausar** (P) enquanto joga. Ao parar o Modo Jogo, os programas pausados voltam do ponto onde estavam.
+
+![Modo Jogo](screenshots/modo-jogo.png)
+
+### Benchmark
+Grava o FPS real do jogo com o PresentMon. Capture antes e depois de um ajuste para ver se ele ajudou de verdade.
+
+![Benchmark](screenshots/benchmark.png)
+
+### Análise
+Procura problemas comuns: monitor abaixo da taxa máxima, RAM em single channel, notebook na bateria, VBS ligado etc.
+
+### Ferramentas e Atividade
+Atalhos úteis (limpar temporários, GPU por jogo, apps na inicialização, taxa do monitor, reparar contadores) e o registro de tudo que o programa fez.
+
+![Ferramentas](screenshots/ferramentas.png)
 
 ## Dá para desfazer?
 
