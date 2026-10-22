@@ -1,0 +1,53 @@
+# Compila o BlkBoost.exe no GitHub e publica na Release.
+#   - Enviar uma tag (ex.: git tag v1.0.0 && git push origin v1.0.0) cria a Release com o .exe anexado.
+#   - "Run workflow" na aba Actions só compila e deixa o .exe para baixar em Artifacts.
+# Assinatura (SignPath Foundation): fica desligada até as variáveis SIGNPATH_* e o segredo
+# SIGNPATH_API_TOKEN existirem em Settings > Secrets and variables > Actions.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar
+        shell: powershell
+        run: ./build.ps1
+
+      - name: Guardar o .exe
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlkBoost
+          path: dist/BlkBoost.exe
+          if-no-files-found: error
+
+      - name: Assinar (SignPath)
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - name: Publicar na Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = if (Test-Path signed/BlkBoost.exe) { 'signed/BlkBoost.exe' } else { 'dist/BlkBoost.exe' }
+          gh release create $env:GITHUB_REF_NAME $exe --title "BLK Boost $env:GITHUB_REF_NAME" --generate-notes
